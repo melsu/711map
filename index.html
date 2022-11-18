@@ -1,286 +1,285 @@
 <!DOCTYPE html>
 <html>
-	<head>
-		<meta charset="utf-8">
-		<title>Create a hover effect</title>
-		<meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
-		<link href="https://api.mapbox.com/mapbox-gl-js/v2.8.2/mapbox-gl.css" rel="stylesheet">
-		<script src="https://api.mapbox.com/mapbox-gl-js/v2.8.2/mapbox-gl.js"></script>
-		<style>
-			body { margin: 0; padding: 0; }
-			#map { position: absolute; top: 0; bottom: 0; width: 100%; }
-			#console {
-					position: absolute;
-					width: 320px;
-					margin: 10px;
-					padding: 10px 20px 10px 30px;
-					background-color: #F0F0F1;
-					border-radius: 5px;
-					z-index: 15;
-					transition: 0.3s ease-in-out;
-					box-shadow: 0 1px 1px 0 rgba(66, 66, 66, 0.08), 0 1px 3px 1px rgba(66, 66, 66, 0.16);
-			}
-			.active {
-					transform: translate3d(-300px, 0, 0);
-					transition: 0.3s ease-in-out;
-			}
-			.itemWrapper {
-					margin-top: -20px;
-			}
-			#toggleConsole {
-					position: absolute;
-					right: 5px;
-					top: 0px;
-			}
-			#toggleConsole img {
-					width: 16px;
-					opacity: 0.7;
-			}
-			#toggleConsole img:hover {
-					opacity: 0.5;
-					transition: all .5s ease;
-					cursor: pointer;
-			}
-			.togglePlanned, .toggleOperational{
-					position: relative;
-					height: 14px;
-					width: 35px;
-					border-radius: 15px;
-					background: #cfcfcf;
-					margin: 8px 0;
-			}
-			.togglePlanned input, .toggleOperational input{
-					opacity: 0;
-					width: 100%;
-					height: 200%;
-					position: absolute;
-					top: -7px;
-					left: 0;
-					z-index: 2;
-					margin: 0
-			}
-			.togglePlanned input:nth-child(2):checked, .toggleOperational input:nth-child(2):checked {
-					z-index: 1;
-			}
-			.toggle__pointer {
-					position: absolute;
-					top: -3.5px;
-					left: 18px;
-					width: 20px;
-					height: 20px;
-					border-radius: 15px;
-					-webkit-transition: left .15s ease-out;
-					transition: left .15s ease-out;
-			}
-			.togglePlanned input:nth-child(2):checked+.toggle__pointer, .toggleOperational input:nth-child(2):checked+.toggle__pointer {
-					left: 0px;
-					background-color: #777777;
-			}
-			.toggle__pointer.colorPlanned {
-					background-color: #d8b365;
-			}
-			.toggle__pointer.colorOperational {
-					background-color: #5ab4ac;
-			}
-		</style>
-	</head>
+  <head>
+	  <meta charset="utf-8">
+	  <title>Create a hover effect</title>
+	  <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
+	  <link href="https://api.mapbox.com/mapbox-gl-js/v2.8.2/mapbox-gl.css" rel="stylesheet">
+	  <script src="https://api.mapbox.com/mapbox-gl-js/v2.8.2/mapbox-gl.js"></script>
+	  <style>
+		body { margin: 0; padding: 0; }
+		#map { position: absolute; top: 0; bottom: 0; width: 100%; }
+		#console {
+				position: absolute;
+				width: 320px;
+				margin: 10px;
+				padding: 10px 20px 10px 30px;
+				background-color: #F0F0F1;
+				border-radius: 5px;
+				z-index: 15;
+				transition: 0.3s ease-in-out;
+				box-shadow: 0 1px 1px 0 rgba(66, 66, 66, 0.08), 0 1px 3px 1px rgba(66, 66, 66, 0.16);
+		}
+		.active {
+				transform: translate3d(-300px, 0, 0);
+				transition: 0.3s ease-in-out;
+		}
+		.itemWrapper {
+				margin-top: -20px;
+		}
+		#toggleConsole {
+				position: absolute;
+				right: 5px;
+				top: 0px;
+		}
+		#toggleConsole img {
+				width: 16px;
+				opacity: 0.7;
+		}
+		#toggleConsole img:hover {
+				opacity: 0.5;
+				transition: all .5s ease;
+				cursor: pointer;
+		}
+		.togglePlanned, .toggleOperational{
+				position: relative;
+				height: 14px;
+				width: 35px;
+				border-radius: 15px;
+				background: #cfcfcf;
+				margin: 8px 0;
+		}
+		.togglePlanned input, .toggleOperational input{
+				opacity: 0;
+				width: 100%;
+				height: 200%;
+				position: absolute;
+				top: -7px;
+				left: 0;
+				z-index: 2;
+				margin: 0
+		}
+		.togglePlanned input:nth-child(2):checked, .toggleOperational input:nth-child(2):checked {
+				z-index: 1;
+		}
+		.toggle__pointer {
+				position: absolute;
+				top: -3.5px;
+				left: 18px;
+				width: 20px;
+				height: 20px;
+				border-radius: 15px;
+				-webkit-transition: left .15s ease-out;
+				transition: left .15s ease-out;
+		}
+		.togglePlanned input:nth-child(2):checked+.toggle__pointer, .toggleOperational input:nth-child(2):checked+.toggle__pointer {
+				left: 0px;
+				background-color: #777777;
+		}
+		.toggle__pointer.colorPlanned {
+				background-color: #d8b365;
+		}
+		.toggle__pointer.colorOperational {
+				background-color: #5ab4ac;
+		}
+  </style>
+</head>
 
-	<body>
-		<div id="map"></div>
-		<div id='console'>
-			 <div class="verticalLine">
-					<h1 id='title'>7-11 Services</h1>
-					<div class="itemWrapper">
-						 <div class='togglePlanned item' id="filterPlanned">
-								<input id='layerPlannedOn' type="radio" value="layerPlannedOn" name="togglePlanned" checked='checked'>
-								<input id='layerPlannedOff' type="radio" value="layerPlannedOff" name="togglePlanned">
-								<div class="toggle__pointer colorPlanned"></div>
-						 </div>
-						 <div class="item">
-								<h2 id="four">Special Services</h2>
-						 </div>
-					</div>
-					<div class="itemWrapper">
-						 <div class='toggleOperational item' id="filterOperational">
-								<input id='layerOperationalOn' type="radio" value="layerOperationalOn" name="toggleOperational" checked='checked'>
-								<input id='layerOperationalOff' type="radio" value="layerOperationalOff" name="toggleOperational">
-								<div class="toggle__pointer colorOperational"></div>
-						 </div>
-						 <div class="item">
-								<h2 id="six">Operational</h2>
-						 </div>
-					</div>
-		</div>
+<body>
+  <div id="map"></div>
+	<div id='console'>
+	  <div class="verticalLine">
+		  <h1 id='title'>7-11 Services</h1>
+		  <div class="itemWrapper">
+			  <div class='togglePlanned item' id="filterPlanned">
+				  <input id='layerPlannedOn' type="radio" value="layerPlannedOn" name="togglePlanned" checked='checked'>
+				  <input id='layerPlannedOff' type="radio" value="layerPlannedOff" name="togglePlanned">
+				  <div class="toggle__pointer colorPlanned"></div>
+			  </div>
+			  <div class="item">
+				  <h2 id="four">Special Services</h2>
+			  </div>
+			</div>
+			<div class="itemWrapper">
+			  <div class='toggleOperational item' id="filterOperational">
+				  <input id='layerOperationalOn' type="radio" value="layerOperationalOn" name="toggleOperational" checked='checked'>
+				  <input id='layerOperationalOff' type="radio" value="layerOperationalOff" name="toggleOperational">
+				  <div class="toggle__pointer colorOperational"></div>
+			  </div>
+			  <div class="item">
+				  <h2 id="six">Operational</h2>
+			  </div>
+	    </div>
+	  </div>
+	</div>
 
-		<!-- end line -->
-		</div>
-		<script>
+	<script>
 
-			mapboxgl.accessToken = 'pk.eyJ1IjoiYXRpYW4xMjAyIiwiYSI6ImNsNHkzZndtdzA2bDIzZHVsMXR3MjV0MmQifQ.9S1iYiOH9Ywc_gIvDauoOA';
+		mapboxgl.accessToken = 'pk.eyJ1IjoiYXRpYW4xMjAyIiwiYSI6ImNsNHkzZndtdzA2bDIzZHVsMXR3MjV0MmQifQ.9S1iYiOH9Ywc_gIvDauoOA';
 
-			const map = new mapboxgl.Map({
-				container: 'map',
-				style: 'mapbox://styles/atian1202/cl1afhbvy000h15nj9n2m9oiz',
-				 // initial map center as Taiwan in [lon, lat]
-				center: [120.5854674, 23.55],
-				zoom: 7
-			});
+		const map = new mapboxgl.Map({
+			container: 'map',
+			style: 'mapbox://styles/atian1202/cl1afhbvy000h15nj9n2m9oiz',
+			 // initial map center as Taiwan in [lon, lat]
+			center: [120.5854674, 23.55],
+			zoom: 7
+		});
 
-			let hoveredStateId = null;
+		let hoveredStateId = null;
 
-			let activeStatus = ["", "1"]
-			let allStatus = ["", "1"]
-			// TODO not understanding this, ask Julia?
-			let statusFilter = ["in", ["get", "Special_services"],
-					["literal", activeStatus]
-			];
+		let activeStatus = ["", "1"]
+		let allStatus = ["", "1"]
+		// TODO not understanding this, ask Julia?
+		let statusFilter = ["in", ["get", "Special_services"],
+				["literal", activeStatus]
+		];
 
-			// ADD SOURCES
+		// ADD SOURCES
 
-			map.on('load', () => {
-				map.addSource('boundary', {
-					'type': 'geojson',
-					'data': 'data/boundary.geojson'
-				});
-
-			map.addSource('stores', {
+		map.on('load', () => {
+			map.addSource('boundary', {
 				'type': 'geojson',
-				'data': 'data/stores_categories.geojson'
+				'data': 'data/boundary.geojson'
 			});
 
-			map.addLayer({
-        'id': 'services',
-        'type': 'geojson',
-        'source': 'stores',
-      });
+		map.addSource('stores', {
+			'type': 'geojson',
+			'data': 'data/stores_categories.geojson'
+		});
+
+		map.addLayer({
+      'id': 'services',
+      'type': 'geojson',
+      'source': 'stores',
+    });
 
 
-			// ADD LAYERS
+		// ADD LAYERS
 
-			// The feature-state dependent fill-opacity expression will render the hover effect
-			// when a feature's hover state is set to true.
-			map.addLayer({
-				'id': 'boundary-fills',
-				'type': 'fill',
-				'source': 'boundary',
-				'layout': {},
-				'paint': {
-					'fill-color': '',
-					'fill-opacity': [
-						'case',
-						['boolean', ['feature-state', 'hover'], false],
-						1, 0.5]
-				}
-			});
-
-			map.addLayer({
-				'id': 'boundary-borders',
-				'type': 'line',
-				'source': 'boundary',
-				'layout': {},
-				'paint': {
-					'line-color': '#d6b892',
-					'line-width': 2
-				}
-			});
-
-			map.addLayer({
-				'id': 'stores',
-				'type': 'circle',
-				'source': 'stores',
-				'layout': {},
-				'paint': {
-					'circle-color': '#8c755e',
-					// Make circles larger as the user zooms from z12 to z22.
-					'circle-radius': {
-					'base': 5,
-					'stops': [[12, 2.5], [22, 180]]
-					},
-				}
-			});
-
-			// toggle createFilterStatus
-			function createFilterStatus(filterName, layerOnName, statusString) {
-					document.getElementById(filterName).addEventListener('change', function(e) {
-							if (e.target.value === layerOnName) {
-									if (activeStatus.indexOf(statusString) == -1) {
-											activeStatus.push(statusString)
-									}
-									statusFilter = ["in", ["get", "Other_products"],
-											["literal", activeStatus]
-									];
-
-									map.setFilter('services', ['all', statusFilter]);
-
-							} else {
-									if (activeStatus.indexOf(statusString) !== -1) {
-											var index = activeStatus.indexOf(statusString);
-											activeStatus.splice(index, 1);
-									}
-									statusFilter = ["in", ["get", "status"],
-											["literal", activeStatus]
-									];
-									map.setFilter('services', ['all', statusFilter]);
-
-							}
-					});
+		// The feature-state dependent fill-opacity expression will render the hover effect
+		// when a feature's hover state is set to true.
+		map.addLayer({
+			'id': 'boundary-fills',
+			'type': 'fill',
+			'source': 'boundary',
+			'layout': {},
+			'paint': {
+				'fill-color': '',
+				'fill-opacity': [
+					'case',
+					['boolean', ['feature-state', 'hover'], false],
+					1, 0.5]
 			}
+		});
 
-			createFilterStatus('filterPlanned', 'layerPlannedOn', 'Other_products')
-			createFilterStatus('filterOperational', 'layerOperationalOn', 'Operational')
+		map.addLayer({
+			'id': 'boundary-borders',
+			'type': 'line',
+			'source': 'boundary',
+			'layout': {},
+			'paint': {
+				'line-color': '#d6b892',
+				'line-width': 2
+			}
+		});
 
-			const handleMapClick = (e) => {
+		map.addLayer({
+			'id': 'stores',
+			'type': 'circle',
+			'source': 'stores',
+			'layout': {},
+			'paint': {
+				'circle-color': '#8c755e',
+				// Make circles larger as the user zooms from z12 to z22.
+				'circle-radius': {
+				'base': 5,
+				'stops': [[12, 2.5], [22, 180]]
+				},
+			}
+		});
 
-	        let features = map.queryRenderedFeatures(e.point, {
-	            layers: ['services', 'subregionsFill']
-	        });
+		// toggle createFilterStatus
+		function createFilterStatus(filterName, layerOnName, statusString) {
+				document.getElementById(filterName).addEventListener('change', function(e) {
+						if (e.target.value === layerOnName) {
+								if (activeStatus.indexOf(statusString) == -1) {
+										activeStatus.push(statusString)
+								}
+								statusFilter = ["in", ["get", "Other_products"],
+										["literal", activeStatus]
+								];
 
-	        if (!features) return;
+								map.setFilter('services', ['all', statusFilter]);
 
-	        const selectedFeature = features.find((feature) => ['plants', 'subregionsFill'].includes(feature.layer.id), );
+						} else {
+								if (activeStatus.indexOf(statusString) !== -1) {
+										var index = activeStatus.indexOf(statusString);
+										activeStatus.splice(index, 1);
+								}
+								statusFilter = ["in", ["get", "status"],
+										["literal", activeStatus]
+								];
+								map.setFilter('services', ['all', statusFilter]);
 
-	        if (!selectedFeature) return;
+						}
+				});
+		}
 
-	    }
+		createFilterStatus('filterPlanned', 'layerPlannedOn', 'Other_products')
+		createFilterStatus('filterOperational', 'layerOperationalOn', 'Operational')
 
-			$("#toggleConsole").css("top", 230);
+		const handleMapClick = (e) => {
 
-			//TODO fix the hover over county highlight
+        let features = map.queryRenderedFeatures(e.point, {
+            layers: ['services', 'subregionsFill']
+        });
 
-			// When the user moves their mouse over the state-fill layer, we'll update the
-			// feature state for the feature under the mouse.
-			map.on('mousemove', 'boundary-fills', (e) => {
-				if (e.features.length > 0) {
-					if (hoveredStateId !== null) {
-						map.setFeatureState(
-							{ source: 'boundary', id: hoveredStateId },
-							{ hover: false }
-						);
-					}
+        if (!features) return;
 
-					hoveredStateId = e.features[0].id;
-					map.setFeatureState(
-						{ source: 'boundary', id: hoveredStateId },
-						{ hover: true }
-					);
-				}
-			});
+        const selectedFeature = features.find((feature) => ['plants', 'subregionsFill'].includes(feature.layer.id), );
 
-			// When the mouse leaves the state-fill layer, update the feature state of the
-			// previously hovered feature.
-			map.on('mouseleave', 'state-fills', () => {
+        if (!selectedFeature) return;
+
+    }
+
+		$("#toggleConsole").css("top", 230);
+
+		//TODO fix the hover over county highlight
+
+		// When the user moves their mouse over the state-fill layer, we'll update the
+		// feature state for the feature under the mouse.
+		map.on('mousemove', 'boundary-fills', (e) => {
+			if (e.features.length > 0) {
 				if (hoveredStateId !== null) {
 					map.setFeatureState(
-							{ source: 'boundary', id: hoveredStateId },
-							{ hover: false }
+						{ source: 'boundary', id: hoveredStateId },
+						{ hover: false }
 					);
 				}
 
-				hoveredStateId = null;
-				});
+				hoveredStateId = e.features[0].id;
+				map.setFeatureState(
+					{ source: 'boundary', id: hoveredStateId },
+					{ hover: true }
+				);
+			}
+		});
+
+		// When the mouse leaves the state-fill layer, update the feature state of the
+		// previously hovered feature.
+		map.on('mouseleave', 'state-fills', () => {
+			if (hoveredStateId !== null) {
+				map.setFeatureState(
+						{ source: 'boundary', id: hoveredStateId },
+						{ hover: false }
+				);
+			}
+
+			hoveredStateId = null;
 			});
+		});
 
-		</script>
+  </script>
 
-	</body>
+  </body>
 </html>
